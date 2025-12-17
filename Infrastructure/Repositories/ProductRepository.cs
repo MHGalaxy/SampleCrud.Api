@@ -15,14 +15,19 @@ public class ProductRepository : IProductRepository
 
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
-        const string sql = "SELECT Id, Name, Price, Stock, CreatedAt FROM Products;";
+        const string sql = @"
+            SELECT ProductId, Title, Description, ProviderId, Price, ImageSrc, CreatedAt, UpdatedAt 
+            FROM Products;";
         using var connection = _context.CreateConnection();
         return await connection.QueryAsync<Product>(sql);
     }
 
     public async Task<Product?> GetByIdAsync(int id)
     {
-        const string sql = "SELECT Id, Name, Price, Stock, CreatedAt FROM Products WHERE Id = @Id;";
+        const string sql = @"
+            SELECT ProductId, Title, Description, ProviderId, Price, ImageSrc, CreatedAt, UpdatedAt
+            FROM Products
+            WHERE ProductId = @ProductId;";
         using var connection = _context.CreateConnection();
         return await connection.QuerySingleOrDefaultAsync<Product>(sql, new { Id = id });
     }
@@ -30,9 +35,9 @@ public class ProductRepository : IProductRepository
     public async Task<int> CreateAsync(Product product)
     {
         const string sql = @"
-                INSERT INTO Products (Name, Price, Stock, CreatedAt)
-                VALUES (@Name, @Price, @Stock, @CreatedAt);
-                SELECT last_insert_rowid();";
+            INSERT INTO Products (Title, Description, ProviderId, Price, ImageSrc, CreatedAt, UpdatedAt)
+            VALUES (@Title, @Description, @ProviderId, @Price, @ImageSrc, @CreatedAt, @UpdatedAt);
+            SELECT last_insert_rowid();";
 
         using var connection = _context.CreateConnection();
         var id = await connection.ExecuteScalarAsync<long>(sql, product);
@@ -42,12 +47,15 @@ public class ProductRepository : IProductRepository
     public async Task<bool> UpdateAsync(Product product)
     {
         const string sql = @"
-                UPDATE Products
-                SET Name = @Name,
-                    Price = @Price,
-                    Stock = @Stock
-                WHERE Id = @Id;";
-
+            UPDATE Products
+            SET
+                Title = @Title,
+                Description = @Description,
+                ProviderId = @ProviderId,
+                Price = @Price,
+                ImageSrc = @ImageSrc,
+                UpdatedAt = @UpdatedAt
+            WHERE ProductId = @ProductId;";
         using var connection = _context.CreateConnection();
         var affected = await connection.ExecuteAsync(sql, product);
         return affected > 0;
@@ -55,7 +63,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<bool> DeleteAsync(int id)
     {
-        const string sql = "DELETE FROM Products WHERE Id = @Id;";
+        const string sql = "DELETE FROM Products WHERE ProductId = @ProductId;";
         using var connection = _context.CreateConnection();
         var affected = await connection.ExecuteAsync(sql, new { Id = id });
         return affected > 0;

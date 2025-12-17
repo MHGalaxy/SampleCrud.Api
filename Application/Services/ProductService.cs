@@ -16,26 +16,34 @@ public class ProductService
     public async Task<IEnumerable<ProductDto>> GetAllAsync()
     {
         var products = await _repository.GetAllAsync();
-        return products.Select(p => new ProductDto
+        return products.Select(product => new ProductDto
         {
-            Id = p.Id,
-            Name = p.Name,
-            Price = p.Price,
-            Stock = p.Stock
+            ProductId = product.ProductId,
+            Title = product.Title,
+            Description = product.Description,
+            ProviderId = product.ProviderId,
+            Price = product.Price,
+            ImageSrc = product.ImageSrc,
+            CreatedAt = product.CreatedAt,
+            UpdatedAt = product.UpdatedAt,
         });
     }
 
     public async Task<ProductDto?> GetByIdAsync(int id)
     {
-        var p = await _repository.GetByIdAsync(id);
-        if (p == null) return null;
+        var product = await _repository.GetByIdAsync(id);
+        if (product == null) return null;
 
         return new ProductDto
         {
-            Id = p.Id,
-            Name = p.Name,
-            Price = p.Price,
-            Stock = p.Stock
+            ProductId = product.ProductId,
+            Title = product.Title,
+            Description = product.Description,
+            ProviderId = product.ProviderId,
+            Price = product.Price,
+            ImageSrc = product.ImageSrc,
+            CreatedAt = product.CreatedAt,
+            UpdatedAt = product.UpdatedAt,
         };
     }
 
@@ -43,23 +51,29 @@ public class ProductService
     {
         var product = new Product
         {
-            Name = dto.Name,
+            Title = dto.Title,
+            Description = dto.Description,
+            ProviderId = dto.ProviderId,
             Price = dto.Price,
-            Stock = dto.Stock,
-            CreatedAt = DateTime.UtcNow
+            ImageSrc = dto.ImageSrc,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = null
         };
 
         return await _repository.CreateAsync(product);
     }
 
-    public async Task<bool> UpdateAsync(int id, UpdateProductDto dto)
+    public async Task<bool> UpdateAsync(int productId, UpdateProductDto dto)
     {
-        var existing = await _repository.GetByIdAsync(id);
+        var existing = await _repository.GetByIdAsync(productId);
         if (existing is null) return false;
 
-        existing.Name = dto.Name;
+        existing.Title = dto.Title;
+        existing.Description = dto.Description;
+        existing.ProviderId = dto.ProviderId;
         existing.Price = dto.Price;
-        existing.Stock = dto.Stock;
+        existing.ImageSrc = dto.ImageSrc;
+        existing.UpdatedAt = DateTime.UtcNow;
 
         return await _repository.UpdateAsync(existing);
     }
