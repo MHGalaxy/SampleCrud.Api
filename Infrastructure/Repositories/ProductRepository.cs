@@ -16,7 +16,7 @@ public class ProductRepository : IProductRepository
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
         const string sql = @"
-            SELECT ProductId, Title, Description, ProviderId, Price, ImageSrc, CreatedAt, UpdatedAt 
+            SELECT ProductId, Title, Description, ProviderId,  CAST(Price AS REAL) AS Price, ImageSrc, CreatedAt, UpdatedAt 
             FROM Products;";
         using var connection = _context.CreateConnection();
         return await connection.QueryAsync<Product>(sql);

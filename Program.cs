@@ -10,10 +10,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy
-            .WithOrigins(
-                "http://localhost:4200"
-            )
+        policy.WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod();
         // .AllowCredentials(); // only if you use cookies/auth and then DON'T use AllowAnyOrigin
