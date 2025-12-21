@@ -16,20 +16,20 @@ public class ProductRepository : IProductRepository
     public async Task<IEnumerable<Product>> GetAllAsync()
     {
         const string sql = @"
-            SELECT ProductId, Title, Description, ProviderId,  CAST(Price AS REAL) AS Price, ImageSrc, CreatedAt, UpdatedAt 
+            SELECT ProductId, Title, Description, ProviderId, CAST(Price AS REAL) AS Price, ImageSrc, CreatedAt, UpdatedAt 
             FROM Products;";
         using var connection = _context.CreateConnection();
         return await connection.QueryAsync<Product>(sql);
     }
 
-    public async Task<Product?> GetByIdAsync(int id)
+    public async Task<Product?> GetByIdAsync(int productId)
     {
         const string sql = @"
-            SELECT ProductId, Title, Description, ProviderId, Price, ImageSrc, CreatedAt, UpdatedAt
+            SELECT ProductId, Title, Description, ProviderId, CAST(Price AS REAL) AS Price, ImageSrc, CreatedAt, UpdatedAt
             FROM Products
             WHERE ProductId = @ProductId;";
         using var connection = _context.CreateConnection();
-        return await connection.QuerySingleOrDefaultAsync<Product>(sql, new { Id = id });
+        return await connection.QuerySingleOrDefaultAsync<Product>(sql, new { ProductId = productId });
     }
 
     public async Task<int> CreateAsync(Product product)
@@ -61,11 +61,11 @@ public class ProductRepository : IProductRepository
         return affected > 0;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task<bool> DeleteAsync(int productId)
     {
         const string sql = "DELETE FROM Products WHERE ProductId = @ProductId;";
         using var connection = _context.CreateConnection();
-        var affected = await connection.ExecuteAsync(sql, new { Id = id });
+        var affected = await connection.ExecuteAsync(sql, new { ProductId = productId });
         return affected > 0;
     }
 }
